@@ -1,0 +1,97 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import initSqlJs, { type Database, type QueryExecResult } from "sql.js";
+import { lessons } from "../src/data/lessons";
+import type { QueryResult } from "../src/db/database";
+import { schemaSql } from "../src/db/schema";
+import { seedSql } from "../src/db/seed";
+import { compareQueryResults, normalizeTextAnswer } from "../src/lib/normalizeResults";
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(dirname, "..");
+const SQL = await initSqlJs({
+  locateFile: (file) => path.join(root, "node_modules", "sql.js", "dist", file),
+});
+
+function createDb(): Database {
+  const db = new SQL.Database();
+  db.exec(schemaSql);
+  db.exec(seedSql);
+  return db;
+}
+
+function toQueryResult(result?: QueryExecResult): QueryResult {
+  if (!result) {
+    return { columns: [], values: [] };
+  }
+
+  return {
+    columns: result.columns,
+    values: result.values as QueryResult["values"],
+  };
+}
+
+function run(sql: string): QueryResult {
+  const db = createDb();
+
+  try {
+    return toQueryResult(db.exec(sql).at(-1));
+  } finally {
+    db.close();
+  }
+}
+
+const failures: string[] = [];
+
+for (const lesson of lessons) {
+  if (lesson.type === "sql") {
+    if (!lesson.expectedSql) {
+      failures.push(`Lekcja ${lesson.id}: brak expectedSql.`);
+      continue;
+    }
+
+    try {
+      const expected = run(lesson.expectedSql);
+      const expectedAgain = run(lesson.expectedSql);
+      const accepted = compareQueryResults(expectedAgain, expected, {
+        orderMatters: lesson.compareOrder ?? true,
+      });
+
+      if (!accepted.correct) {
+        failures.push(`Lekcja ${lesson.id}: rozwiązanie wzorcowe nie przechodzi walidacji.`);
+      }
+
+      const wrong = compareQueryResults(run("SELECT 1 AS wrong_marker;"), expected, {
+        orderMatters: lesson.compareOrder ?? true,
+      });
+
+      if (wrong.correct) {
+        failures.push(`Lekcja ${lesson.id}: oczywiście błędne zapytanie zostało uznane za poprawne.`);
+      }
+    } catch (error) {
+      failures.push(`Lekcja ${lesson.id}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  } else {
+    if (!lesson.expectedTextAnswer) {
+      failures.push(`Lekcja ${lesson.id}: brak expectedTextAnswer.`);
+      continue;
+    }
+
+    const expected = normalizeTextAnswer(lesson.expectedTextAnswer);
+
+    if (normalizeTextAnswer(lesson.solution) !== expected) {
+      failures.push(`Lekcja ${lesson.id}: solution różni się od expectedTextAnswer.`);
+    }
+
+    if (normalizeTextAnswer("SELECT") === expected) {
+      failures.push(`Lekcja ${lesson.id}: testowa zła odpowiedź pasuje do wzorca.`);
+    }
+  }
+}
+
+if (failures.length > 0) {
+  console.error(failures.join("\n"));
+  process.exit(1);
+}
+
+console.log(`Zweryfikowano ${lessons.length} zadań: wzorce przechodzą, błędne odpowiedzi odpadają.`);
