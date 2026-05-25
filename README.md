@@ -21,10 +21,11 @@ Po starcie Vite otwórz adres pokazany w terminalu, zwykle `http://127.0.0.1:517
 
 1. Dodaj wpis w `src/data/lessons.ts`.
 2. Ustaw `type` na `"sql"` albo `"text"`.
-3. Dla zadania SQL podaj `visibleTables`, `expectedSql`, `hints` i `solution`.
-4. Dla pytania tekstowego podaj `expectedTextAnswer`, `hints` i `solution`.
-5. Jeżeli potrzebne są nowe dane testowe, dopisz je w `src/db/seed.ts`.
-6. Jeżeli potrzebna jest nowa tabela, dopisz schemat w `src/db/schema.ts`.
+3. Ustaw `category` na `"extra"`, jeżeli zadanie ma trafić do zakładki `Więcej zadań`. Brak kategorii oznacza `Zadania z PDF`.
+4. Dla zadania SQL podaj `visibleTables`, `expectedSql`, `hints` i `solution`.
+5. Dla pytania tekstowego podaj `expectedTextAnswer`, `hints` i `solution`.
+6. Jeżeli potrzebne są nowe dane testowe, dopisz je w `src/db/seed.ts`.
+7. Jeżeli potrzebna jest nowa tabela, dopisz schemat w `src/db/schema.ts`.
 
 Przykładowa struktura lekcji:
 
@@ -34,12 +35,22 @@ Przykładowa struktura lekcji:
   title: "Nowe zadanie",
   taskText: "Treść polecenia",
   type: "sql",
+  category: "extra",
   visibleTables: ["Kraje"],
   expectedSql: "SELECT nazwa_kraju FROM Kraje;",
   hints: ["Sprawdź SELECT"],
   solution: "SELECT nazwa_kraju FROM Kraje;",
 }
 ```
+
+## Kategorie i losowanie
+
+Aplikacja ma dwie zakładki z zadaniami:
+
+- `Zadania z PDF` - oryginalne zadania wyciągnięte z pliku `bazy_danych-1.docx.pdf`.
+- `Więcej zadań` - dodatkowe zadania SQL na podobnym poziomie trudności, oparte na tych samych tabelach.
+
+Przycisk `Następne zadanie` losuje kolejne zadanie tylko z aktualnie wybranej zakładki.
 
 ## Walidacja odpowiedzi
 

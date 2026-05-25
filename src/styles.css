@@ -80,6 +80,60 @@ textarea {
   font-size: 0.9rem;
 }
 
+.category-tabs {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.category-tabs button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid #dbe4ef;
+  border-radius: 8px;
+  background: white;
+  color: #334155;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 800;
+}
+
+.category-tabs button.active {
+  border-color: #1f6feb;
+  background: #edf5ff;
+  color: #1b5fc9;
+}
+
+.category-tabs strong {
+  display: grid;
+  place-items: center;
+  min-width: 30px;
+  min-height: 26px;
+  border-radius: 999px;
+  background: #e8edf4;
+  color: #516071;
+  font-size: 0.82rem;
+}
+
+.category-tabs button.active strong {
+  background: #dbeafe;
+  color: #1b5fc9;
+}
+
+.next-lesson-button {
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: 16px;
+  border: 1px solid #1f6feb;
+  border-radius: 8px;
+  background: #1f6feb;
+  color: white;
+  font-weight: 850;
+}
+
 .progress-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -200,11 +254,27 @@ textarea {
   padding: 26px 28px;
 }
 
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .task-number {
   display: inline-flex;
   border-radius: 999px;
   background: #fff5d6;
   color: #875a00;
+  padding: 5px 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.category-label {
+  display: inline-flex;
+  border-radius: 999px;
+  background: #edf5ff;
+  color: #1b5fc9;
   padding: 5px 10px;
   font-size: 0.82rem;
   font-weight: 700;

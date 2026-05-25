@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Lesson } from "../data/lessons";
+import { getLessonCategory, lessonCategoryLabels, type Lesson } from "../data/lessons";
 import type { TableSnapshot } from "../db/database";
 import { getTableSnapshot } from "../db/database";
 import { validateSqlLesson, validateTextLesson, type ValidationResult } from "../lib/validator";
@@ -99,7 +99,10 @@ export default function LessonView({ lesson, onValidation }: LessonViewProps) {
   return (
     <main className="lesson-view">
       <section className="lesson-hero">
-        <span className="task-number">Zadanie {lesson.id}</span>
+        <div className="hero-tags">
+          <span className="task-number">Zadanie {lesson.id}</span>
+          <span className="category-label">{lessonCategoryLabels[getLessonCategory(lesson)]}</span>
+        </div>
         <h2>{lesson.title}</h2>
         <p>{lesson.taskText}</p>
       </section>
