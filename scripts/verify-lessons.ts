@@ -89,6 +89,24 @@ for (const lesson of lessons) {
   }
 }
 
+const aliasExpected = run(`
+  SELECT Kraje.nazwa_kraju, Kraje.stolica
+  FROM Kraje
+  WHERE Kraje.kod IS NOT NULL
+  ORDER BY Kraje.nazwa_kraju DESC;
+`);
+const aliasVariant = run(`
+  SELECT Kraje.nazwa_kraju AS kraj, Kraje.stolica AS miasto_glowne
+  FROM Kraje
+  WHERE Kraje.kod IS NOT NULL
+  ORDER BY Kraje.nazwa_kraju DESC;
+`);
+const aliasComparison = compareQueryResults(aliasVariant, aliasExpected, { orderMatters: true });
+
+if (!aliasComparison.correct) {
+  failures.push("Walidacja błędnie odrzuca poprawny wynik z innymi aliasami kolumn.");
+}
+
 if (failures.length > 0) {
   console.error(failures.join("\n"));
   process.exit(1);

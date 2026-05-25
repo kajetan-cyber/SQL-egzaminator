@@ -58,8 +58,8 @@ Aplikacja nie porównuje treści SQL znak po znaku.
 
 1. Uruchamia zapytanie użytkownika na testowej bazie SQLite w przeglądarce.
 2. Uruchamia wzorcowe zapytanie z `src/data/lessons.ts` na takiej samej świeżej bazie.
-3. Porównuje nazwy kolumn bez rozróżniania wielkości liter.
-4. Porównuje wartości wierszy.
+3. Sprawdza liczbę kolumn, ale nie wymaga identycznych aliasów ani nazw kolumn.
+4. Porównuje wartości wierszy, więc inne poprawne zapytanie jest akceptowane, jeśli daje ten sam wynik.
 5. Dla zadań z sortowaniem sprawdza kolejność wyników.
 6. Dla zadań tekstowych porównuje odpowiedzi bez rozróżniania wielkości liter i nadmiarowych spacji.
 

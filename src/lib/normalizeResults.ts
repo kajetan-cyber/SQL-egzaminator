@@ -59,22 +59,10 @@ export function compareQueryResults(
   expectedResult: QueryResult,
   options: CompareOptions,
 ): ComparisonResult {
-  const userColumns = userResult.columns.map(normalizeColumnName);
-  const expectedColumns = expectedResult.columns.map(normalizeColumnName);
-
-  if (userColumns.length !== expectedColumns.length) {
+  if (userResult.columns.length !== expectedResult.columns.length) {
     return {
       correct: false,
-      message: `Liczba kolumn jest inna. Oczekiwano ${expectedColumns.length}, otrzymano ${userColumns.length}.`,
-    };
-  }
-
-  const columnsMatch = expectedColumns.every((column, index) => column === userColumns[index]);
-
-  if (!columnsMatch) {
-    return {
-      correct: false,
-      message: "Nazwy albo kolejność kolumn różnią się od oczekiwanego wyniku.",
+      message: `Liczba kolumn jest inna. Oczekiwano ${expectedResult.columns.length}, otrzymano ${userResult.columns.length}.`,
     };
   }
 
