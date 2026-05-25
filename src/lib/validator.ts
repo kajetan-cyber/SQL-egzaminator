@@ -24,6 +24,15 @@ export interface TextValidationResult {
 
 export type ValidationResult = SqlValidationResult | TextValidationResult;
 
+export function shouldRequireOrderedResult(lesson: Pick<Lesson, "taskText">): boolean {
+  const taskText = normalizeTextAnswer(lesson.taskText);
+  const hasSortCommand = /posortuj|sortowan|sortuj|kolejnosc|kolejność/.test(taskText);
+  const hasSortDirection = /alfabetycznie|rosnaco|rosnąco|malejaco|malejąco|odwrotnie|desc|asc/.test(taskText);
+  const hasSortTarget = /\bpo\b|\bwedlug\b|\bwedług\b/.test(taskText);
+
+  return (hasSortCommand && hasSortTarget) || hasSortDirection;
+}
+
 export async function validateSqlLesson(lesson: Lesson, sql: string): Promise<SqlValidationResult> {
   if (!lesson.expectedSql) {
     throw new Error("Lekcja SQL nie ma zdefiniowanego rozwiązania wzorcowego.");
@@ -51,7 +60,7 @@ export async function validateSqlLesson(lesson: Lesson, sql: string): Promise<Sq
   }
 
   const comparison = compareQueryResults(userExecution.result, expectedExecution.result, {
-    orderMatters: lesson.compareOrder ?? true,
+    orderMatters: shouldRequireOrderedResult(lesson),
   });
 
   return {

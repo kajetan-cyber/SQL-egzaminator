@@ -6,6 +6,7 @@ import type { QueryResult } from "../src/db/database";
 import { schemaSql } from "../src/db/schema";
 import { seedSql } from "../src/db/seed";
 import { compareQueryResults, normalizeTextAnswer } from "../src/lib/normalizeResults";
+import { shouldRequireOrderedResult } from "../src/lib/validator";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(dirname, "..");
@@ -54,7 +55,7 @@ for (const lesson of lessons) {
       const expected = run(lesson.expectedSql);
       const expectedAgain = run(lesson.expectedSql);
       const accepted = compareQueryResults(expectedAgain, expected, {
-        orderMatters: lesson.compareOrder ?? true,
+        orderMatters: shouldRequireOrderedResult(lesson),
       });
 
       if (!accepted.correct) {
@@ -62,7 +63,7 @@ for (const lesson of lessons) {
       }
 
       const wrong = compareQueryResults(run("SELECT 1 AS wrong_marker;"), expected, {
-        orderMatters: lesson.compareOrder ?? true,
+        orderMatters: shouldRequireOrderedResult(lesson),
       });
 
       if (wrong.correct) {
@@ -105,6 +106,48 @@ const aliasComparison = compareQueryResults(aliasVariant, aliasExpected, { order
 
 if (!aliasComparison.correct) {
   failures.push("Walidacja błędnie odrzuca poprawny wynik z innymi aliasami kolumn.");
+}
+
+const unorderedExpected = run(`
+  SELECT Klienci.Nazwa, Zamowienia.IDzamowienia
+  FROM Klienci
+  LEFT JOIN Zamowienia ON Klienci.IdKlienta = Zamowienia.IdKlienta;
+`);
+const unorderedVariant = run(`
+  SELECT Klienci.Nazwa, Zamowienia.IDzamowienia
+  FROM Klienci
+  LEFT JOIN Zamowienia ON Klienci.IdKlienta = Zamowienia.IdKlienta
+  ORDER BY Klienci.Nazwa DESC;
+`);
+const unorderedComparison = compareQueryResults(unorderedVariant, unorderedExpected, {
+  orderMatters: shouldRequireOrderedResult({ taskText: "Wyświetl wszystkich klientów oraz numery zamówień, które mogą posiadać." }),
+});
+
+if (!unorderedComparison.correct) {
+  failures.push("Walidacja błędnie wymaga kolejności dla zadania bez jasnego sortowania.");
+}
+
+const orderedExpected = run(`
+  SELECT Kraje.nazwa_kraju, Kraje.stolica
+  FROM Kraje
+  WHERE Kraje.kod IS NOT NULL
+  ORDER BY Kraje.nazwa_kraju DESC;
+`);
+const orderedWrongOrder = run(`
+  SELECT Kraje.nazwa_kraju, Kraje.stolica
+  FROM Kraje
+  WHERE Kraje.kod IS NOT NULL
+  ORDER BY Kraje.nazwa_kraju ASC;
+`);
+const orderedComparison = compareQueryResults(orderedWrongOrder, orderedExpected, {
+  orderMatters: shouldRequireOrderedResult({
+    taskText:
+      "Wyświetl nazwy krajów i stolice dla krajów posiadających kod państwa. Posortuj odwrotnie alfabetycznie po nazwie kraju.",
+  }),
+});
+
+if (orderedComparison.correct) {
+  failures.push("Walidacja nie wymaga kolejności dla zadania z jasnym poleceniem sortowania.");
 }
 
 if (failures.length > 0) {

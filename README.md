@@ -60,7 +60,7 @@ Aplikacja nie porównuje treści SQL znak po znaku.
 2. Uruchamia wzorcowe zapytanie z `src/data/lessons.ts` na takiej samej świeżej bazie.
 3. Sprawdza liczbę kolumn, ale nie wymaga identycznych aliasów ani nazw kolumn.
 4. Porównuje wartości wierszy, więc inne poprawne zapytanie jest akceptowane, jeśli daje ten sam wynik.
-5. Dla zadań z sortowaniem sprawdza kolejność wyników.
+5. Kolejność wyników sprawdza tylko wtedy, gdy polecenie jasno wymaga sortowania i wskazuje sposób sortowania.
 6. Dla zadań tekstowych porównuje odpowiedzi bez rozróżniania wielkości liter i nadmiarowych spacji.
 
 Jeżeli SQL zawiera błąd składni lub błąd wykonania, aplikacja pokazuje komunikat SQLite i nie przerywa pracy.
