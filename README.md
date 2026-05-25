@@ -62,27 +62,6 @@ Opcjonalny skrypt logiczny sprawdza, czy wszystkie rozwiązania wzorcowe przecho
 npm run verify:lessons
 ```
 
-## Publikacja na GitHubie
 
-1. Utwórz nowe repozytorium na GitHubie, np. `sql-egzaminator`.
-2. W katalogu projektu uruchom:
-
-```bash
-git init
-git add .
-git commit -m "Initial SQL learning app"
-git branch -M main
-git remote add origin https://github.com/TWOJ_LOGIN/sql-egzaminator.git
-git push -u origin main
-```
-
-3. Na GitHubie wejdź w `Settings` -> `Pages`.
-4. W polu `Source` wybierz `GitHub Actions`.
-5. Po chwili workflow `Deploy to GitHub Pages` zbuduje aplikację.
-6. Link będzie miał format:
-
-```text
-https://TWOJ_LOGIN.github.io/sql-egzaminator/
-```
 
 Jeżeli komenda `git` nie działa na komputerze, zainstaluj Git for Windows albo użyj GitHub Desktop i dodaj ten folder jako lokalne repozytorium.
